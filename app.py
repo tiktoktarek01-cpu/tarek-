@@ -211,12 +211,10 @@ def get_local_ip():
 
 def write_progress(percent, label, done=False):
     import json
-    import streamlit as st
     try:
-        st_static_path = os.path.join(os.path.dirname(st.__file__), "static")
-        app_media_dir = os.path.join(st_static_path, "app_media")
-        os.makedirs(app_media_dir, exist_ok=True)
-        progress_file = os.path.join(app_media_dir, "progress.json")
+        local_static = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+        os.makedirs(local_static, exist_ok=True)
+        progress_file = os.path.join(local_static, "progress.json")
         with open(progress_file, "w", encoding="utf-8") as f:
             json.dump({"percent": percent, "label": label, "done": done}, f)
     except Exception:
@@ -243,7 +241,7 @@ def render_custom_progress_bar_js():
         let intervalId = setInterval(updateProgress, 1000);
         
         function updateProgress() {{
-            fetch("app_media/progress.json?t=" + Date.now())
+            fetch("app/static/progress.json?t=" + Date.now())
                 .then(r => r.json())
                 .then(data => {{
                     if (data && typeof data.percent !== 'undefined') {{
