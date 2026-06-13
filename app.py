@@ -2364,7 +2364,35 @@ html, body {
         const doc = window.parent.document;
         const parentWin = window.parent;
         
+        // Hide community cloud viewer badge, status widgets, and toolbar overlays
+        setInterval(() => {
+            try {
+                const badges = doc.querySelectorAll("[class*='viewerBadge'], [class*='ViewerBadge'], [id*='viewer-badge'], [id*='viewerBadge'], [class*='viewerbadge']");
+                badges.forEach(b => b.style.setProperty('display', 'none', 'important'));
+                
+                const statusWidgets = doc.querySelectorAll("div[data-testid='stStatusWidget'], [class*='StyledStatusWidget']");
+                statusWidgets.forEach(w => w.style.setProperty('display', 'none', 'important'));
+                
+                const toolbars = doc.querySelectorAll("[data-testid='stToolbar'], [class*='StyledToolbar']");
+                toolbars.forEach(t => t.style.setProperty('display', 'none', 'important'));
+
+                const githubLinks = doc.querySelectorAll("a[href*='github.com']");
+                githubLinks.forEach(link => {
+                    let p = link.parentElement;
+                    while (p && p !== doc.body) {
+                        const style = window.getComputedStyle(p);
+                        if (style.position === 'fixed' || p.style.position === 'fixed') {
+                            p.style.setProperty('display', 'none', 'important');
+                            break;
+                        }
+                        p = p.parentElement;
+                    }
+                });
+            } catch (err) {}
+        }, 800);
+        
         function loadScript(src, callback) {
+
             if (doc.querySelector(`script[src="${src}"]`)) {
                 if (callback) callback();
                 return;
