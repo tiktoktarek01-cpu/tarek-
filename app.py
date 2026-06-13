@@ -1166,10 +1166,9 @@ bg_img_css = ""
 
 
 st.markdown("""
-<!-- Load Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com"></script>
 <!-- Load GSAP -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&display=swap');
@@ -2376,9 +2375,9 @@ html, body {
             doc.head.appendChild(script);
         }
 
-        loadScript("https://cdn.tailwindcss.com");
         loadScript("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js", () => {
             const gsap = parentWin.gsap;
+
             if (!gsap) return;
             
             if (parentWin.__dragonObserver) {
