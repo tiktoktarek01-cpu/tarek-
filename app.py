@@ -2665,14 +2665,13 @@ elif active_stage == 2:
                     if not os.path.exists(thumb_path):
                         extract_thumbnail(preview_path, thumb_path)
                         
-                    # Copy thumbnail to Streamlit static directory
+                    # Copy thumbnail to local static directory
                     import shutil
-                    st_static_path = os.path.join(os.path.dirname(st.__file__), "static")
-                    app_media_dir = os.path.join(st_static_path, "app_media")
-                    os.makedirs(app_media_dir, exist_ok=True)
+                    local_static = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+                    os.makedirs(local_static, exist_ok=True)
                     
                     thumb_filename = os.path.basename(thumb_path)
-                    static_dest = os.path.join(app_media_dir, thumb_filename)
+                    static_dest = os.path.join(local_static, thumb_filename)
                     if not os.path.exists(static_dest):
                         try:
                             shutil.copy2(thumb_path, static_dest)
@@ -2682,7 +2681,7 @@ elif active_stage == 2:
                     mtime = int(os.path.getmtime(preview_path))
                     st.markdown(
                         f"""
-                        <img class="tiktok-video" src="app_media/{thumb_filename}?v={mtime}"
+                        <img class="tiktok-video" src="app/static/{thumb_filename}?v={mtime}"
                              style="width:100%; max-width:5.2cm; height:10.5cm; object-fit:cover; border-radius:16px; display:block; background:#111; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
                         """,
                         unsafe_allow_html=True
