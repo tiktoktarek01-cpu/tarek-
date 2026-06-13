@@ -2664,27 +2664,40 @@ elif active_stage == 2:
                     if not os.path.exists(thumb_path):
                         extract_thumbnail(preview_path, thumb_path)
                         
-                    # Copy thumbnail to local static directory
-                    import shutil
-                    local_static = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
-                    os.makedirs(local_static, exist_ok=True)
-                    
-                    thumb_filename = os.path.basename(thumb_path)
-                    static_dest = os.path.join(local_static, thumb_filename)
-                    if not os.path.exists(static_dest):
+                    # Convert thumbnail to base64 Data URI for robust embedding
+                    import base64
+                    img_src = ""
+                    if os.path.exists(thumb_path):
                         try:
-                            shutil.copy2(thumb_path, static_dest)
+                            with open(thumb_path, "rb") as img_file:
+                                b64_data = base64.b64encode(img_file.read()).decode()
+                            img_src = f"data:image/jpeg;base64,{b64_data}"
                         except Exception:
                             pass
-                            
-                    mtime = int(os.path.getmtime(preview_path))
+                    
+                    # If base64 failed, fallback to static URL
+                    if not img_src:
+                        import shutil
+                        local_static = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+                        os.makedirs(local_static, exist_ok=True)
+                        thumb_filename = os.path.basename(thumb_path)
+                        static_dest = os.path.join(local_static, thumb_filename)
+                        if not os.path.exists(static_dest):
+                            try:
+                                shutil.copy2(thumb_path, static_dest)
+                            except Exception:
+                                pass
+                        mtime = int(os.path.getmtime(preview_path))
+                        img_src = f"app/static/{thumb_filename}?v={mtime}"
+
                     st.markdown(
                         f"""
-                        <img class="tiktok-video" src="app/static/{thumb_filename}?v={mtime}"
+                        <img class="tiktok-video" src="{img_src}"
                              style="width:100%; max-width:5.2cm; height:10.5cm; object-fit:cover; border-radius:16px; display:block; background:#111; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
                         """,
                         unsafe_allow_html=True
                     )
+
                 else:
                     st.error("غير موجود")
                 
